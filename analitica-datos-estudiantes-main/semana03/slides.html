@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 03 - Data Cleaning</title>
+    <style>
+        /* ===========================================
+           DATA ANALYTICS COURSE - WEEK 3
+           Data Cleaning
+           Universidad Cooperativa de Colombia
+           Instructor: Julian Eduardo Garzon Giraldo, MsC
+           =========================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ===========================================
+           SLIDE BASE STYLES
+           =========================================== */
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 80vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide:first-of-type {
+            display: flex;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* ===========================================
+           TITLE SLIDE
+           =========================================== */
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide::before {
+            display: none;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .title-slide h1::after {
+            display: none;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            color: white;
+        }
+
+        .title-slide .info {
+            font-size: 1.3rem;
+            opacity: 0.8;
+        }
+
+        /* ===========================================
+           HEADINGS
+           =========================================== */
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin: 30px 0 20px 0;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin: 20px 0 15px 0;
+        }
+
+        /* ===========================================
+           NAVIGATION
+           =========================================== */
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .slide-counter {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* ===========================================
+           GRID LAYOUTS
+           =========================================== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        /* ===========================================
+           CARDS
+           =========================================== */
+        .card {
+            padding: 25px;
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-success {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .card-warning {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            color: white;
+        }
+
+        .card-danger {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+        }
+
+        .card-info {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+        }
+
+        .card-light {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #2c3e50;
+            border-left: 5px solid #667eea;
+        }
+
+        .card h3 {
+            color: inherit;
+            margin-top: 0;
+        }
+
+        .card-white h3,
+        .card-light h3 {
+            color: #667eea;
+        }
+
+        /* ===========================================
+           CODE BLOCKS
+           =========================================== */
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid #4a5568;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            white-space: pre;
+        }
+
+        .code-inline {
+            background: #e2e8f0;
+            color: #1a202c;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Syntax highlighting colors */
+        .code-block .keyword { color: #f687b3; }
+        .code-block .string { color: #68d391; }
+        .code-block .comment { color: #718096; font-style: italic; }
+        .code-block .function { color: #63b3ed; }
+        .code-block .number { color: #f6ad55; }
+
+        /* ===========================================
+           LISTS
+           =========================================== */
+        .list-styled {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .list-styled li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .list-styled li:last-child {
+            border-bottom: none;
+        }
+
+        .list-check li::before {
+            content: '';
+            background: #00b894;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ===========================================
+           CONCEPT BOX (Explanations like for 10-year-olds)
+           =========================================== */
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 5px solid #667eea;
+            padding: 25px 30px;
+            border-radius: 0 15px 15px 0;
+            margin: 30px 0;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .concept-box p {
+            margin: 10px 0;
+        }
+
+        .concept-box strong {
+            color: #667eea;
+        }
+
+        .concept-box .analogy {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        /* ===========================================
+           COMPARISON BOXES
+           =========================================== */
+        .comparison-good {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .comparison-bad {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        /* ===========================================
+           ALERT BOXES
+           =========================================== */
+        .alert {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+
+        /* ===========================================
+           TABLES
+           =========================================== */
+        .table-styled {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-styled thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table-styled th,
+        .table-styled td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .table-styled tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .table-styled tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        /* ===========================================
+           PROCESS FLOW
+           =========================================== */
+        .process-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .process-step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 150px;
+            position: relative;
+        }
+
+        .process-arrow {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        /* ===========================================
+           VISUAL DATAFRAME
+           =========================================== */
+        .dataframe-visual {
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .dataframe-visual .header-row {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: grid;
+            color: white;
+            font-weight: 600;
+        }
+
+        .dataframe-visual .data-row {
+            display: grid;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dataframe-visual .data-row:nth-child(even) {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .dataframe-visual .cell {
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .dataframe-visual .index-cell {
+            background: rgba(102, 126, 234, 0.1);
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .cell-nan {
+            background: rgba(255, 118, 117, 0.15) !important;
+            color: #d63031;
+            font-weight: bold;
+        }
+
+        .cell-ok {
+            background: rgba(0, 184, 148, 0.1) !important;
+        }
+
+        /* ===========================================
+           FLOWCHART STYLES
+           =========================================== */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .flow-node {
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            min-width: 250px;
+        }
+
+        .flow-question {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            padding: 20px 50px;
+        }
+
+        .flow-answer-yes {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+        }
+
+        .flow-answer-no {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+        }
+
+        .flow-arrow {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .flow-branch {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .flow-branch-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        /* ===========================================
+           BEFORE/AFTER VISUAL
+           =========================================== */
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .before-after .arrow {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* ===========================================
+           RESPONSIVE
+           =========================================== */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+                margin: 20px 0;
+            }
+
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .process-flow {
+                flex-direction: column;
+            }
+
+            .flow-branch {
+                flex-direction: column;
+            }
+
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===========================================
+           PRINT STYLES
+           =========================================== */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .slide {
+                display: flex !important;
+                page-break-after: always;
+                min-height: auto;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .nav-container {
+                display: none;
+            }
+        }
+
+        /* ===========================================
+           CUSTOM STYLES FOR THIS PRESENTATION
+           =========================================== */
+        .laundry-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .data-quality-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .data-quality-item .icon {
+            font-size: 2rem;
+        }
+
+        .hook-question {
+            font-size: 2rem;
+            text-align: center;
+            color: #667eea;
+            margin: 40px 0;
+            font-weight: 600;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-top: 10px;
+        }
+
+        .strategy-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .strategy-card h4 {
+            margin-bottom: 8px;
+        }
+
+        .strategy-card p {
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">Prev</button>
+        <span class="slide-counter" id="slideCounter">1 / 18</span>
+        <button class="nav-btn" onclick="nextSlide()">Next</button>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- =========================================
+             SLIDE 1: TITLE (HOOK)
+             ========================================= -->
+        <div class="slide title-slide">
+            <h1>Data Cleaning</h1>
+            <h2>Week 3 - From Messy to Meaningful</h2>
+            <div class="info">
+                <div>Julian Eduardo Garzon Giraldo, MsC</div>
+                <div style="margin-top: 10px; opacity: 0.8;">Data Analytics Course - UCC</div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 2: HOOK - Why Should You Care?
+             ========================================= -->
+        <div class="slide">
+            <h1>The Dirty Truth About Data</h1>
+
+            <p class="hook-question">How much of a data scientist's time is spent cleaning data?</p>
+
+            <div class="grid-3">
+                <div class="stat-box card card-light">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">Time spent cleaning & preparing data</div>
+                </div>
+                <div class="stat-box card card-light">
+                    <div class="stat-number">20%</div>
+                    <div class="stat-label">Time spent on actual analysis</div>
+                </div>
+                <div class="stat-box card card-light">
+                    <div class="stat-number">$15M</div>
+                    <div class="stat-label">Annual cost of bad data per company (IBM)</div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" style="text-align: center; font-size: 1.2rem;">
+                <strong>Master data cleaning = Become 5x more valuable as an analyst</strong>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 3: LEARNING OBJECTIVES
+             ========================================= -->
+        <div class="slide">
+            <h1>What You'll Learn Today</h1>
+            <div class="grid-2">
+                <div>
+                    <h2>Objectives</h2>
+                    <ul class="list-styled list-check">
+                        <li>Understand what makes data "dirty"</li>
+                        <li>Detect and handle missing values (NaN)</li>
+                        <li>Convert data types correctly</li>
+                        <li>Remove duplicate rows</li>
+                        <li>Fix text inconsistencies</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>By the end you'll be able to:</h2>
+                    <div class="card card-primary">
+                        <p style="font-size: 1.2rem;">
+                            Take a messy, real-world dataset and systematically clean it so it is ready for analysis.
+                        </p>
+                    </div>
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        <strong>Dataset:</strong> Education Statistics (MEN) - 14,585 records, 41+ columns from datos.gov.co
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 4: CONTEXT - The Laundry Analogy
+             ========================================= -->
+        <div class="slide">
+            <h1>Understanding Data Cleaning</h1>
+
+            <div class="concept-box">
+                <div class="laundry-icon">&#128090;</div>
+                <p><strong>Data cleaning is like sorting dirty laundry.</strong></p>
+                <p>Before you can wear your clothes, you need to:</p>
+
+                <div class="grid-4" style="margin-top: 30px;">
+                    <div class="data-quality-item">
+                        <span class="icon">&#128269;</span>
+                        <div><strong>Check</strong><br>Find what's dirty</div>
+                    </div>
+                    <div class="data-quality-item">
+                        <span class="icon">&#128083;</span>
+                        <div><strong>Separate</strong><br>Whites from colors</div>
+                    </div>
+                    <div class="data-quality-item">
+                        <span class="icon">&#128167;</span>
+                        <div><strong>Clean</strong><br>Remove stains</div>
+                    </div>
+                    <div class="data-quality-item">
+                        <span class="icon">&#128230;</span>
+                        <div><strong>Organize</strong><br>Fold and store</div>
+                    </div>
+                </div>
+
+                <div class="analogy">
+                    In data terms: Inspect for problems, categorize issues, fix errors, then verify your clean data is ready for analysis.
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 5: CONTEXT - Data Problems Mapped
+             ========================================= -->
+        <div class="slide">
+            <h1>Common Data Problems</h1>
+
+            <table class="table-styled">
+                <thead>
+                    <tr>
+                        <th>Laundry Problem</th>
+                        <th>Data Problem</th>
+                        <th>Example</th>
+                        <th>Tool</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>&#129510; Socks without a pair</td>
+                        <td><strong>Missing values (NaN)</strong></td>
+                        <td>Empty cells, null values</td>
+                        <td><code class="code-inline">fillna()</code>, <code class="code-inline">dropna()</code></td>
+                    </tr>
+                    <tr>
+                        <td>&#128094; Shoe in the shirt pile</td>
+                        <td><strong>Wrong data types</strong></td>
+                        <td>Numbers stored as text</td>
+                        <td><code class="code-inline">astype()</code>, <code class="code-inline">to_datetime()</code></td>
+                    </tr>
+                    <tr>
+                        <td>&#128085; Same shirt counted twice</td>
+                        <td><strong>Duplicates</strong></td>
+                        <td>Repeated rows</td>
+                        <td><code class="code-inline">drop_duplicates()</code></td>
+                    </tr>
+                    <tr>
+                        <td>&#129466; Inconsistent folding</td>
+                        <td><strong>Text inconsistencies</strong></td>
+                        <td>"NY", "N.Y.", "New York"</td>
+                        <td><code class="code-inline">str.strip()</code>, <code class="code-inline">str.upper()</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-info" style="text-align: center;">
+                <strong>Today we tackle each of these four problems, one at a time.</strong>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 6: What is NaN?
+             ========================================= -->
+        <div class="slide">
+            <h1>What is NaN?</h1>
+
+            <div class="concept-box">
+                <p><strong>NaN stands for "Not a Number".</strong> It is how pandas marks a missing value: a cell where no data exists.</p>
+                <div class="analogy">
+                    Think of NaN like an empty seat in a classroom. The seat exists, but nobody is sitting there. You need to decide: leave it empty, or assign someone to it?
+                </div>
+            </div>
+
+            <h2 style="text-align: center; margin-top: 30px;">A DataFrame with Missing Values</h2>
+
+            <div class="dataframe-visual" style="max-width: 700px; margin: 20px auto;">
+                <div class="header-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell"></div>
+                    <div class="cell">Name</div>
+                    <div class="cell">Department</div>
+                    <div class="cell">Students</div>
+                    <div class="cell">Dropout %</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell index-cell">0</div>
+                    <div class="cell">School A</div>
+                    <div class="cell">Antioquia</div>
+                    <div class="cell">450</div>
+                    <div class="cell">3.2</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell index-cell">1</div>
+                    <div class="cell">School B</div>
+                    <div class="cell cell-nan">NaN</div>
+                    <div class="cell">320</div>
+                    <div class="cell cell-nan">NaN</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell index-cell">2</div>
+                    <div class="cell">School C</div>
+                    <div class="cell">Bogota</div>
+                    <div class="cell cell-nan">NaN</div>
+                    <div class="cell">5.1</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell index-cell">3</div>
+                    <div class="cell">School D</div>
+                    <div class="cell">Valle</div>
+                    <div class="cell">580</div>
+                    <div class="cell">2.8</div>
+                </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 20px;">
+                <div class="card card-light" style="text-align: center;">
+                    <h3>Data entry error</h3>
+                    <p>Someone forgot to type a value</p>
+                </div>
+                <div class="card card-light" style="text-align: center;">
+                    <h3>System failure</h3>
+                    <p>A sensor or API didn't respond</p>
+                </div>
+                <div class="card card-light" style="text-align: center;">
+                    <h3>Optional field</h3>
+                    <p>The field wasn't required</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 7: Detecting Missing Values
+             ========================================= -->
+        <div class="slide">
+            <h1>Detecting Missing Values</h1>
+
+            <div class="grid-2">
+                <div>
+                    <h2>The Code</h2>
+                    <div class="code-block"><span class="comment"># How many missing per column?</span>
+df.<span class="function">isnull</span>().<span class="function">sum</span>()
+
+<span class="comment"># Percentage missing per column</span>
+(df.<span class="function">isnull</span>().<span class="function">sum</span>() / <span class="function">len</span>(df)) * <span class="number">100</span>
+
+<span class="comment"># Total missing in entire dataset</span>
+df.<span class="function">isnull</span>().<span class="function">sum</span>().<span class="function">sum</span>()</div>
+                </div>
+                <div>
+                    <h2>What Each Part Does</h2>
+                    <div class="card card-light" style="margin-bottom: 15px;">
+                        <h3><code class="code-inline">isnull()</code></h3>
+                        <p>Returns True/False for every cell. True = missing.</p>
+                    </div>
+                    <div class="card card-light" style="margin-bottom: 15px;">
+                        <h3><code class="code-inline">.sum()</code></h3>
+                        <p>Counts the True values (because True = 1).</p>
+                    </div>
+                    <div class="card card-light">
+                        <h3><code class="code-inline">.sum().sum()</code></h3>
+                        <p>First sum counts per column, second sum totals everything.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" style="margin-top: 20px;">
+                <strong>Pro tip:</strong> Always check missing values FIRST before any analysis. It's the #1 step in every cleaning workflow.
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 8: Decision Framework - Drop vs Fill
+             ========================================= -->
+        <div class="slide">
+            <h1>When to Drop vs. When to Fill?</h1>
+
+            <div class="concept-box" style="margin-bottom: 30px;">
+                <p><strong>This is the most important decision in data cleaning.</strong> There is no single right answer. It depends on how much is missing and what the data means.</p>
+            </div>
+
+            <div class="flowchart">
+                <div class="flow-node flow-question">How much of the column is missing?</div>
+                <div class="flow-arrow">&#8595;</div>
+                <div class="flow-branch">
+                    <div style="text-align: center;">
+                        <div class="flow-branch-label">&gt; 50% missing</div>
+                        <div class="flow-node flow-answer-no" style="border-radius: 12px;">
+                            <strong>Drop the column</strong><br>
+                            <small>Too little data to be useful</small>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="flow-branch-label">&lt; 5% missing</div>
+                        <div class="flow-node flow-answer-yes" style="border-radius: 12px;">
+                            <strong>Drop the rows</strong><br>
+                            <small>Safe: tiny data loss</small>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="flow-branch-label">5-50% missing</div>
+                        <div class="flow-node" style="border-radius: 12px; background: linear-gradient(135deg, #74b9ff, #0984e3); color: white;">
+                            <strong>Fill with a value</strong><br>
+                            <small>Use 0, mean, or median</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-top: 20px;">
+                <strong>Key question:</strong> Is this column essential for your analysis? If yes, fill it. If not, consider dropping it.
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 9: Handling Missing - dropna()
+             ========================================= -->
+        <div class="slide">
+            <h1>Removing Missing Values: dropna()</h1>
+
+            <div class="concept-box" style="margin-bottom: 20px;">
+                <p><strong>dropna() removes rows (or columns) that contain missing values.</strong> Use it when the missing data is rare or the row is useless without the value.</p>
+            </div>
+
+            <div class="code-block"><span class="comment"># Drop rows with ANY missing value (aggressive!)</span>
+df_clean = df.<span class="function">dropna</span>()
+
+<span class="comment"># Drop rows missing a SPECIFIC column (safer)</span>
+df_clean = df.<span class="function">dropna</span>(subset=[<span class="string">'department'</span>])
+
+<span class="comment"># Drop rows only if ALL values are missing</span>
+df_clean = df.<span class="function">dropna</span>(how=<span class="string">'all'</span>)
+
+<span class="comment"># Drop COLUMNS with missing (axis=1)</span>
+df_clean = df.<span class="function">dropna</span>(axis=<span class="number">1</span>)</div>
+
+            <div class="grid-2" style="margin-top: 20px;">
+                <div class="comparison-good">
+                    <h3>When to use dropna()</h3>
+                    <p style="margin-top: 10px;">&lt; 5% of rows are affected</p>
+                    <p>The missing column is critical (like a name or ID)</p>
+                    <p>You have plenty of data to spare</p>
+                </div>
+                <div class="comparison-bad">
+                    <h3>When NOT to use dropna()</h3>
+                    <p style="margin-top: 10px;">Many rows have missing values</p>
+                    <p>You'd lose too much data</p>
+                    <p>The missing pattern is not random</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 10: Handling Missing - fillna()
+             ========================================= -->
+        <div class="slide">
+            <h1>Filling Missing Values: fillna()</h1>
+
+            <div class="concept-box" style="margin-bottom: 20px;">
+                <p><strong>fillna() replaces NaN with a value you choose.</strong> The right replacement depends on what the column represents.</p>
+            </div>
+
+            <div class="code-block"><span class="comment"># Fill with a constant value</span>
+df[<span class="string">'students'</span>] = df[<span class="string">'students'</span>].<span class="function">fillna</span>(<span class="number">0</span>)
+
+<span class="comment"># Fill with the column average</span>
+df[<span class="string">'dropout_rate'</span>] = df[<span class="string">'dropout_rate'</span>].<span class="function">fillna</span>(df[<span class="string">'dropout_rate'</span>].<span class="function">mean</span>())
+
+<span class="comment"># Fill with the column median (robust to outliers)</span>
+df[<span class="string">'score'</span>] = df[<span class="string">'score'</span>].<span class="function">fillna</span>(df[<span class="string">'score'</span>].<span class="function">median</span>())
+
+<span class="comment"># Fill text columns with a label</span>
+df[<span class="string">'region'</span>] = df[<span class="string">'region'</span>].<span class="function">fillna</span>(<span class="string">'Unknown'</span>)</div>
+
+            <div class="grid-4" style="margin-top: 20px;">
+                <div class="strategy-card card card-info">
+                    <h4>Fill with 0</h4>
+                    <p>Counts, totals</p>
+                    <p><em>"Not reported = zero"</em></p>
+                </div>
+                <div class="strategy-card card card-success">
+                    <h4>Fill with mean</h4>
+                    <p>Symmetric data</p>
+                    <p><em>"Use the average"</em></p>
+                </div>
+                <div class="strategy-card card card-warning">
+                    <h4>Fill with median</h4>
+                    <p>Skewed data</p>
+                    <p><em>"Use the middle"</em></p>
+                </div>
+                <div class="strategy-card card card-primary">
+                    <h4>Fill with label</h4>
+                    <p>Text columns</p>
+                    <p><em>"Unknown"</em></p>
+                </div>
+            </div>
+
+            <div class="alert alert-danger" style="margin-top: 20px;">
+                <strong>Common mistake:</strong> <code class="code-inline">df['col'].fillna(0)</code> does NOT change the original DataFrame. You must assign the result: <code class="code-inline">df['col'] = df['col'].fillna(0)</code>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 11: What Are Data Types?
+             ========================================= -->
+        <div class="slide">
+            <h1>What Are Data Types?</h1>
+
+            <div class="concept-box">
+                <p><strong>Every column in a DataFrame has a data type</strong> that tells pandas how to store and process the values.</p>
+                <div class="analogy">
+                    Think of it like putting things in the right boxes. If you put a book in the "food" box, the kitchen staff won't know what to do with it. Similarly, if a number is stored as text, pandas can't do math with it.
+                </div>
+            </div>
+
+            <table class="table-styled" style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>pandas Type</th>
+                        <th>What It Stores</th>
+                        <th>Example</th>
+                        <th>Can Do Math?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">int64</code></td>
+                        <td>Whole numbers</td>
+                        <td>42, 2020, 1500</td>
+                        <td style="color: #00b894; font-weight: bold;">Yes</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">float64</code></td>
+                        <td>Decimal numbers</td>
+                        <td>3.14, 99.5, 0.0</td>
+                        <td style="color: #00b894; font-weight: bold;">Yes</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">object</code></td>
+                        <td>Text (strings)</td>
+                        <td>"Bogota", "2020"</td>
+                        <td style="color: #d63031; font-weight: bold;">No</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">datetime64</code></td>
+                        <td>Dates and times</td>
+                        <td>2020-01-15</td>
+                        <td style="color: #00b894; font-weight: bold;">Yes (differences)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">bool</code></td>
+                        <td>True / False</td>
+                        <td>True, False</td>
+                        <td style="color: #00b894; font-weight: bold;">Yes (True=1)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning">
+                <strong>The #1 type problem:</strong> A column looks like numbers ("2020", "1500") but pandas loaded it as <code class="code-inline">object</code> (text). You can't calculate the mean of text!
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 12: Converting Data Types
+             ========================================= -->
+        <div class="slide">
+            <h1>Converting Data Types</h1>
+
+            <div class="grid-2">
+                <div>
+                    <h2>Check current types</h2>
+                    <div class="code-block"><span class="comment"># See all column types</span>
+df.<span class="function">dtypes</span>
+
+<span class="comment"># Example output:</span>
+<span class="comment"># name        object   (text)</span>
+<span class="comment"># year        float64  (decimal?)</span>
+<span class="comment"># students    object   (text!)</span>
+<span class="comment"># active      object   (text!)</span></div>
+
+                    <div class="alert alert-info" style="margin-top: 15px;">
+                        <strong>Tip:</strong> Run <code class="code-inline">df.dtypes</code> right after loading. If a column you expect to be numeric says <code class="code-inline">object</code>, it needs conversion.
+                    </div>
+                </div>
+                <div>
+                    <h2>Fix them</h2>
+                    <div class="code-block"><span class="comment"># Convert text to integer</span>
+df[<span class="string">'year'</span>] = df[<span class="string">'year'</span>].<span class="function">astype</span>(<span class="function">int</span>)
+
+<span class="comment"># Convert text to decimal</span>
+df[<span class="string">'price'</span>] = df[<span class="string">'price'</span>].<span class="function">astype</span>(<span class="function">float</span>)
+
+<span class="comment"># Convert to date</span>
+df[<span class="string">'date'</span>] = pd.<span class="function">to_datetime</span>(df[<span class="string">'date'</span>])
+
+<span class="comment"># Convert to category (saves memory)</span>
+df[<span class="string">'region'</span>] = df[<span class="string">'region'</span>].<span class="function">astype</span>(<span class="string">'category'</span>)</div>
+                </div>
+            </div>
+
+            <div class="alert alert-danger" style="margin-top: 20px;">
+                <strong>Trap:</strong> <code class="code-inline">astype(int)</code> crashes if the column has NaN values. Always fill or drop NaN <strong>before</strong> converting to int.
+                <br><br>
+                <strong>Safe pattern:</strong> <code class="code-inline">df['year'] = df['year'].fillna(0).astype(int)</code>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 13: What Are Duplicates?
+             ========================================= -->
+        <div class="slide">
+            <h1>What Are Duplicates?</h1>
+
+            <div class="concept-box">
+                <p><strong>A duplicate is a row that appears more than once with identical values.</strong></p>
+                <div class="analogy">
+                    Imagine counting students in a classroom. If you accidentally count Maria twice, your total is wrong. Duplicates in data do the same thing: they inflate your counts and distort your averages.
+                </div>
+            </div>
+
+            <h2 style="text-align: center; margin-top: 20px;">Spot the Duplicate</h2>
+
+            <div class="dataframe-visual" style="max-width: 700px; margin: 20px auto;">
+                <div class="header-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell"></div>
+                    <div class="cell">School</div>
+                    <div class="cell">Department</div>
+                    <div class="cell">Year</div>
+                    <div class="cell">Students</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell index-cell">0</div>
+                    <div class="cell">School A</div>
+                    <div class="cell">Antioquia</div>
+                    <div class="cell">2022</div>
+                    <div class="cell">450</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr; background: rgba(255, 118, 117, 0.15);">
+                    <div class="cell index-cell">1</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">School B</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">Bogota</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">2022</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">320</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr; background: rgba(255, 118, 117, 0.15);">
+                    <div class="cell index-cell">2</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">School B</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">Bogota</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">2022</div>
+                    <div class="cell" style="color: #d63031; font-weight: bold;">320</div>
+                </div>
+                <div class="data-row" style="grid-template-columns: 60px 1fr 1fr 1fr 1fr;">
+                    <div class="cell index-cell">3</div>
+                    <div class="cell">School C</div>
+                    <div class="cell">Valle</div>
+                    <div class="cell">2022</div>
+                    <div class="cell">580</div>
+                </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 10px;">
+                <div class="card card-light" style="text-align: center;">
+                    <h3>Data entry errors</h3>
+                    <p>Same record entered twice</p>
+                </div>
+                <div class="card card-light" style="text-align: center;">
+                    <h3>System glitches</h3>
+                    <p>API returned the same row twice</p>
+                </div>
+                <div class="card card-light" style="text-align: center;">
+                    <h3>Merging datasets</h3>
+                    <p>Overlapping records from two sources</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 14: Removing Duplicates
+             ========================================= -->
+        <div class="slide">
+            <h1>Removing Duplicates</h1>
+
+            <div class="code-block"><span class="comment"># How many duplicates exist?</span>
+df.<span class="function">duplicated</span>().<span class="function">sum</span>()
+
+<span class="comment"># See the duplicate rows</span>
+df[df.<span class="function">duplicated</span>(keep=<span class="keyword">False</span>)]
+
+<span class="comment"># Remove exact duplicates (keep first occurrence)</span>
+df = df.<span class="function">drop_duplicates</span>()
+
+<span class="comment"># Remove duplicates based on specific columns</span>
+df = df.<span class="function">drop_duplicates</span>(subset=[<span class="string">'school'</span>, <span class="string">'year'</span>])</div>
+
+            <div class="grid-2" style="margin-top: 30px;">
+                <div class="card card-info">
+                    <h3>duplicated()</h3>
+                    <p style="margin-top: 10px;">Returns True/False for each row. True means "this row appeared before."</p>
+                    <p style="margin-top: 10px;"><code class="code-inline">keep=False</code> marks ALL copies as True (not just the second one).</p>
+                </div>
+                <div class="card card-success">
+                    <h3>drop_duplicates()</h3>
+                    <p style="margin-top: 10px;">Removes the duplicate rows, keeping the first occurrence by default.</p>
+                    <p style="margin-top: 10px;"><code class="code-inline">subset=</code> lets you check only specific columns for duplication.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" style="margin-top: 20px;">
+                <strong>Be careful:</strong> Not all duplicates are errors. A school reporting the same data for two different grades may look duplicated but is valid. Use <code class="code-inline">subset=</code> to check only the columns that should be unique.
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 15: String Inconsistencies
+             ========================================= -->
+        <div class="slide">
+            <h1>Fixing Text Inconsistencies</h1>
+
+            <div class="concept-box" style="margin-bottom: 20px;">
+                <p><strong>To pandas, "Bogota", "BOGOTA", and " bogota " are three completely different values.</strong> This breaks grouping and counting.</p>
+            </div>
+
+            <div class="before-after">
+                <div>
+                    <h3 style="text-align: center; color: #d63031;">Before</h3>
+                    <div class="dataframe-visual">
+                        <div class="header-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell"></div>
+                            <div class="cell">Department</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">0</div>
+                            <div class="cell">Bogota</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">1</div>
+                            <div class="cell">BOGOTA</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">2</div>
+                            <div class="cell">&nbsp; bogota &nbsp;</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">3</div>
+                            <div class="cell">BOGOTA</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: #d63031; margin-top: 10px;"><strong>nunique() = 3</strong> (wrong!)</p>
+                </div>
+                <div class="arrow" style="text-align: center; font-size: 3rem;">&#8594;</div>
+                <div>
+                    <h3 style="text-align: center; color: #00b894;">After</h3>
+                    <div class="dataframe-visual" style="border-color: #00b894;">
+                        <div class="header-row" style="grid-template-columns: 60px 1fr; background: linear-gradient(135deg, #00b894, #00cec9);">
+                            <div class="cell"></div>
+                            <div class="cell">Department</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">0</div>
+                            <div class="cell cell-ok">BOGOTA</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">1</div>
+                            <div class="cell cell-ok">BOGOTA</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">2</div>
+                            <div class="cell cell-ok">BOGOTA</div>
+                        </div>
+                        <div class="data-row" style="grid-template-columns: 60px 1fr;">
+                            <div class="cell index-cell">3</div>
+                            <div class="cell cell-ok">BOGOTA</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: #00b894; margin-top: 10px;"><strong>nunique() = 1</strong> (correct!)</p>
+                </div>
+            </div>
+
+            <div class="code-block" style="margin-top: 20px;"><span class="comment"># Standardize: uppercase + remove whitespace</span>
+df[<span class="string">'department'</span>] = df[<span class="string">'department'</span>].str.<span class="function">upper</span>().str.<span class="function">strip</span>()
+
+<span class="comment"># Check the result</span>
+<span class="function">print</span>(df[<span class="string">'department'</span>].<span class="function">nunique</span>())   <span class="comment"># Should be fewer unique values now</span>
+<span class="function">print</span>(df[<span class="string">'department'</span>].<span class="function">unique</span>())    <span class="comment"># See all standardized values</span></div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 16: Complete Cleaning Workflow
+             ========================================= -->
+        <div class="slide">
+            <h1>The 5-Step Cleaning Workflow</h1>
+
+            <div class="process-flow">
+                <div class="process-step" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);">
+                    <strong>1. Inspect</strong><br>
+                    <code style="font-size: 0.8rem;">df.info()</code><br>
+                    <code style="font-size: 0.8rem;">df.dtypes</code>
+                </div>
+                <div class="process-arrow">&#8594;</div>
+                <div class="process-step" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);">
+                    <strong>2. Missing</strong><br>
+                    <code style="font-size: 0.8rem;">isnull().sum()</code><br>
+                    <code style="font-size: 0.8rem;">fillna() / dropna()</code>
+                </div>
+                <div class="process-arrow">&#8594;</div>
+                <div class="process-step" style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);">
+                    <strong>3. Types</strong><br>
+                    <code style="font-size: 0.8rem;">astype()</code><br>
+                    <code style="font-size: 0.8rem;">to_datetime()</code>
+                </div>
+                <div class="process-arrow">&#8594;</div>
+                <div class="process-step" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+                    <strong>4. Duplicates</strong><br>
+                    <code style="font-size: 0.8rem;">duplicated()</code><br>
+                    <code style="font-size: 0.8rem;">drop_duplicates()</code>
+                </div>
+                <div class="process-arrow">&#8594;</div>
+                <div class="process-step" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                    <strong>5. Consistency</strong><br>
+                    <code style="font-size: 0.8rem;">str.upper()</code><br>
+                    <code style="font-size: 0.8rem;">str.strip()</code>
+                </div>
+            </div>
+
+            <div class="code-block" style="font-size: 0.85rem;"><span class="comment"># Complete cleaning workflow example</span>
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="comment"># 1. Load and inspect</span>
+df = pd.<span class="function">read_csv</span>(<span class="string">'education_stats.csv'</span>)
+<span class="function">print</span>(df.<span class="function">shape</span>, df.<span class="function">dtypes</span>)
+
+<span class="comment"># 2. Handle missing values</span>
+df[<span class="string">'students'</span>] = df[<span class="string">'students'</span>].<span class="function">fillna</span>(<span class="number">0</span>)
+df = df.<span class="function">dropna</span>(subset=[<span class="string">'department'</span>])
+
+<span class="comment"># 3. Fix data types</span>
+df[<span class="string">'year'</span>] = df[<span class="string">'year'</span>].<span class="function">fillna</span>(<span class="number">0</span>).<span class="function">astype</span>(<span class="function">int</span>)
+
+<span class="comment"># 4. Remove duplicates</span>
+df = df.<span class="function">drop_duplicates</span>()
+
+<span class="comment"># 5. Standardize text</span>
+df[<span class="string">'department'</span>] = df[<span class="string">'department'</span>].str.<span class="function">upper</span>().str.<span class="function">strip</span>()</div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 17: In-Class Exercise
+             ========================================= -->
+        <div class="slide">
+            <h1>In-Class Exercise</h1>
+
+            <div class="concept-box" style="text-align: center; margin-bottom: 30px;">
+                <p style="font-size: 1.4rem;"><strong>Now it's your turn!</strong></p>
+                <p style="font-size: 1.1rem;">Open the exercise notebook and follow along.</p>
+                <p style="margin-top: 15px; font-size: 0.95rem; opacity: 0.8;">
+                    <code class="code-inline">semana03/exercise/exercise.ipynb</code>
+                </p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card card-info">
+                    <h3 style="text-align: center;">Part 1</h3>
+                    <p style="text-align: center; margin-top: 10px; font-size: 1.05rem;">
+                        <strong>Inspect the Data</strong>
+                    </p>
+                    <p style="text-align: center; margin-top: 8px;">
+                        shape, dtypes, isnull, describe
+                    </p>
+                </div>
+                <div class="card card-warning">
+                    <h3 style="text-align: center;">Part 2</h3>
+                    <p style="text-align: center; margin-top: 10px; font-size: 1.05rem;">
+                        <strong>Handle Missing Values</strong>
+                    </p>
+                    <p style="text-align: center; margin-top: 8px;">
+                        fillna, dropna, decision framework
+                    </p>
+                </div>
+                <div class="card card-success">
+                    <h3 style="text-align: center;">Part 3</h3>
+                    <p style="text-align: center; margin-top: 10px; font-size: 1.05rem;">
+                        <strong>Fix Types, Duplicates & Text</strong>
+                    </p>
+                    <p style="text-align: center; margin-top: 8px;">
+                        astype, drop_duplicates, str.upper
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 30px;">
+                <div class="alert alert-info" style="text-align: center;">
+                    <strong>Duration:</strong> ~30 minutes<br>
+                    All code is already written for you. Just run each cell and read the explanations.
+                </div>
+                <div class="alert alert-success" style="text-align: center;">
+                    <strong>How to work:</strong><br>
+                    Read the markdown, run the code, observe the output, understand why.
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             SLIDE 18: Summary Toolkit
+             ========================================= -->
+        <div class="slide">
+            <h1>Your Data Cleaning Toolkit</h1>
+
+            <table class="table-styled">
+                <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Detect</th>
+                        <th>Fix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Missing values</strong></td>
+                        <td><code class="code-inline">isnull().sum()</code></td>
+                        <td><code class="code-inline">fillna()</code> or <code class="code-inline">dropna()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wrong types</strong></td>
+                        <td><code class="code-inline">dtypes</code></td>
+                        <td><code class="code-inline">astype()</code> or <code class="code-inline">to_datetime()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duplicates</strong></td>
+                        <td><code class="code-inline">duplicated().sum()</code></td>
+                        <td><code class="code-inline">drop_duplicates()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Text inconsistencies</strong></td>
+                        <td><code class="code-inline">nunique()</code> + <code class="code-inline">unique()</code></td>
+                        <td><code class="code-inline">str.upper().str.strip()</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="grid-2" style="margin-top: 30px;">
+                <div>
+                    <h2>What We Learned</h2>
+                    <div class="card card-info">
+                        <ul style="list-style: none;">
+                            <li style="padding: 8px 0;">Data cleaning = sorting dirty laundry</li>
+                            <li style="padding: 8px 0;">NaN = empty seat in a classroom</li>
+                            <li style="padding: 8px 0;">Drop vs. fill depends on how much is missing</li>
+                            <li style="padding: 8px 0;">Always fix types before doing math</li>
+                            <li style="padding: 8px 0;">Standardize text before grouping</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h2>Your Tasks</h2>
+                    <div class="card card-primary">
+                        <ul style="list-style: none;">
+                            <li style="padding: 8px 0;">1. Complete the in-class exercise</li>
+                            <li style="padding: 8px 0;">2. Finish the workshop notebook</li>
+                            <li style="padding: 8px 0;">3. Apply cleaning to YOUR project dataset</li>
+                            <li style="padding: 8px 0;">4. Document your cleaning decisions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-success" style="margin-top: 20px; text-align: center;">
+                <strong>Next week:</strong> Data Filtering & Selection - learning to find exactly the rows you need.
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <div class="card card-success" style="display: inline-block;">
+                    <h3 style="margin: 0;">Questions?</h3>
+                    <p style="margin: 10px 0 0 0;">Let's discuss before the exercise!</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION SCRIPT -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function updateCounter() {
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].style.display = 'flex';
+            slides[currentSlide].style.animation = 'fadeInUp 0.4s ease-out';
+            updateCounter();
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides - 1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
