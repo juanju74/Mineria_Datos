@@ -1,0 +1,17 @@
+# Datos crudos (pesados, no van al repo)
+data/raw/*.csv
+data/processed/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+*.egg-info/
+
+# Jupyter
+.jupyter/
+
+# OS
+.DS_Store
+Thumbs.db

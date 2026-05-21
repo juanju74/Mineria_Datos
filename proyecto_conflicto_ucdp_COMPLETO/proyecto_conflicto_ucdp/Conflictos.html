@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MÁS ALLÁ DEL CONTEO | UCDP 2022–2026</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Oswald:wght@400;700&family=Inter:wght@400;600;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #E8002D;
+      --red2: #FF1744;
+      --dark: #0A0A0F;
+      --darker: #050508;
+      --gold: #FFD600;
+      --gold2: #FFAB00;
+      --white: #FFFFFF;
+      --gray: #B0B0C3;
+      --card-bg: #13131F;
+      --card-border: rgba(255,255,255,0.08);
+      --teal: #00E5FF;
+      --green: #00E676;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--dark);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(232,0,45,0.3);
+    }
+    .nav-logo {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700; font-size: 0.9rem;
+      color: var(--red); letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .nav-center {
+      font-family: 'Oswald', sans-serif;
+      color: var(--gray); font-size: 0.85rem; letter-spacing: 0.08em;
+    }
+    .nav-btns { display: flex; gap: 10px; align-items: center; }
+    .nbtn {
+      background: none; border: 1.5px solid rgba(255,255,255,0.25);
+      color: white; border-radius: 8px; padding: 8px 20px;
+      font-family: 'Inter', sans-serif; font-weight: 700; cursor: pointer;
+      transition: all 0.18s; font-size: 0.85rem;
+    }
+    .nbtn:hover { background: var(--red); border-color: var(--red); }
+    .slide-counter {
+      font-family: 'Oswald', sans-serif;
+      background: rgba(232,0,45,0.15); border: 1.5px solid rgba(232,0,45,0.4);
+      border-radius: 8px; padding: 8px 18px; color: var(--red);
+      font-weight: 700; font-size: 0.9rem;
+    }
+
+    /* ── SLIDES WRAPPER ── */
+    .deck { width: 100%; height: 100vh; padding-top: 62px; }
+    .slide {
+      display: none; flex-direction: column;
+      width: 100%; height: calc(100vh - 62px);
+      overflow: hidden; position: relative;
+    }
+    .slide.active { display: flex; }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; bottom: 0; left: 0; height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      transition: width 0.4s cubic-bezier(.4,0,.2,1);
+      z-index: 200;
+    }
+
+    /* ── SLIDE LAYOUTS ── */
+
+    /* TITLE SLIDE */
+    .s-title {
+      background: var(--darker);
+      justify-content: center; align-items: flex-start;
+      padding: 0 80px;
+    }
+    .s-title::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(232,0,45,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,214,0,0.08) 0%, transparent 60%);
+    }
+    .title-eyebrow {
+      font-family: 'Oswald', sans-serif; font-weight: 400;
+      font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 20px;
+    }
+    .title-h1 {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: clamp(4rem, 9vw, 9rem);
+      line-height: 0.9; letter-spacing: -0.01em;
+      text-transform: uppercase; margin-bottom: 28px;
+    }
+    .title-h1 .accent { color: var(--red); }
+    .title-sub {
+      font-size: 1.2rem; color: var(--gray); max-width: 700px;
+      line-height: 1.6; margin-bottom: 36px; font-weight: 400;
+    }
+    .hero-q {
+      display: inline-block;
+      border-left: 5px solid var(--gold);
+      padding: 16px 24px;
+      background: rgba(255,214,0,0.06);
+      border-radius: 0 12px 12px 0;
+      font-size: 1.15rem; line-height: 1.55;
+      color: rgba(255,255,255,0.9);
+      max-width: 740px;
+    }
+
+    /* CONTENT SLIDES */
+    .s-content {
+      padding: 40px 80px 100px;
+      justify-content: flex-start;
+      gap: 26px;
+      overflow-y: auto;
+    }
+
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 6px;
+      font-family: 'Oswald', sans-serif; font-size: 0.75rem;
+      letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+      width: fit-content;
+    }
+    .badge-red { background: rgba(232,0,45,0.15); color: var(--red); border: 1px solid rgba(232,0,45,0.3); }
+    .badge-gold { background: rgba(255,214,0,0.12); color: var(--gold); border: 1px solid rgba(255,214,0,0.3); }
+    .badge-teal { background: rgba(0,229,255,0.1); color: var(--teal); border: 1px solid rgba(0,229,255,0.25); }
+    .badge-green { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.25); }
+
+    .slide-h2 {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: clamp(1.8rem, 3.5vw, 3.2rem);
+      line-height: 1.05; text-transform: uppercase;
+    }
+
+    /* GRID CARDS */
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+    .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 22px 24px;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+    }
+    .card h3 {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: 1rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .card p { color: var(--gray); font-size: 0.93rem; line-height: 1.55; }
+
+    /* METRIC CARDS */
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 20px 22px;
+      text-align: center;
+    }
+    .metric-num {
+      display: block;
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      color: var(--red); line-height: 1; margin-bottom: 8px;
+    }
+    .metric-label { color: var(--gray); font-size: 0.82rem; font-weight: 600; }
+
+    /* CALLOUT */
+    .callout {
+      border-left: 4px solid var(--teal);
+      background: rgba(0,229,255,0.06);
+      border-radius: 0 12px 12px 0;
+      padding: 16px 22px;
+    }
+    .callout.danger {
+      border-left-color: var(--red);
+      background: rgba(232,0,45,0.06);
+    }
+    .callout.gold {
+      border-left-color: var(--gold);
+      background: rgba(255,214,0,0.06);
+    }
+    .callout p, .callout strong { color: rgba(255,255,255,0.88); font-size: 0.95rem; line-height: 1.6; }
+    .callout strong { color: var(--gold); }
+
+    /* BAR LIST */
+    .bar-list { display: flex; flex-direction: column; gap: 14px; }
+    .bar-row { display: grid; grid-template-columns: 180px 1fr 90px; gap: 14px; align-items: center; }
+    .bar-name { font-weight: 700; font-size: 0.88rem; color: white; }
+    .bar-track { height: 14px; border-radius: 999px; background: rgba(255,255,255,0.07); overflow: hidden; }
+    .bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      animation: growBar 1s cubic-bezier(.4,0,.2,1) both;
+      transform-origin: left;
+    }
+    @keyframes growBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .bar-value { text-align: right; color: var(--gold); font-weight: 800; font-size: 0.9rem; }
+
+    /* BIG NUMBER */
+    .big-num {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: clamp(5rem, 12vw, 10rem);
+      line-height: 0.85; color: var(--red);
+    }
+
+    /* SPLIT */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+
+    /* TIMELINE */
+    .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .step {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 16px 14px;
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--red); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.9rem; margin-bottom: 10px;
+    }
+    .step h3 { font-size: 0.85rem; font-weight: 800; color: var(--gold); margin-bottom: 6px; }
+    .step p { font-size: 0.78rem; color: var(--gray); line-height: 1.45; }
+
+    /* TABLE */
+    .case-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; }
+    .case-table th {
+      background: rgba(232,0,45,0.2); color: var(--gold);
+      font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 13px 14px; text-align: left;
+    }
+    .case-table td {
+      padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.85); font-size: 0.9rem;
+    }
+    .case-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+    .case-tag {
+      display: inline-flex; padding: 3px 10px;
+      border-radius: 999px; background: rgba(232,0,45,0.15);
+      font-weight: 800; color: var(--red); font-size: 0.82rem;
+      border: 1px solid rgba(232,0,45,0.3);
+    }
+
+    /* QUOTE */
+    .blockquote {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: clamp(1.6rem, 3.5vw, 3rem);
+      line-height: 1.1; text-transform: uppercase;
+      max-width: 600px; color: white;
+    }
+    .blockquote .hl { color: var(--red); }
+
+    /* SVG CHART */
+    .chart-panel {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 20px 24px;
+    }
+    .chart-panel h3 {
+      font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gray); margin-bottom: 14px;
+    }
+    .line-chart { width: 100%; height: 220px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--gray); font-weight: 700; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    /* ── SPEAKER PANEL ── */
+    .speaker-panel {
+      position: fixed; bottom: 10px; left: 80px; right: 80px;
+      z-index: 50;
+      display: none;
+    }
+    .speaker-panel.visible { display: block; }
+    .speaker-box {
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(232,0,45,0.4);
+      border-radius: 14px; padding: 16px 22px;
+      display: grid; grid-template-columns: auto 1fr;
+      gap: 16px; align-items: start;
+    }
+    .speaker-who {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: 0.72rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--red);
+      background: rgba(232,0,45,0.1); border: 1px solid rgba(232,0,45,0.3);
+      border-radius: 6px; padding: 4px 12px;
+      white-space: nowrap; margin-top: 2px;
+    }
+    .speaker-text { color: rgba(255,255,255,0.82); font-size: 0.88rem; line-height: 1.55; }
+    .speaker-text strong { color: var(--gold); }
+    .speaker-toggle {
+      position: fixed; bottom: 14px; right: 26px; z-index: 200;
+      background: rgba(232,0,45,0.15); border: 1.5px solid rgba(232,0,45,0.4);
+      color: var(--red); border-radius: 8px; padding: 8px 16px;
+      font-family: 'Inter', sans-serif; font-weight: 800; cursor: pointer;
+      font-size: 0.78rem; letter-spacing: 0.05em;
+    }
+    .speaker-toggle:hover { background: var(--red); color: white; }
+
+    /* CLOSE SLIDE */
+    .s-close {
+      background: var(--darker); justify-content: center; align-items: center;
+      text-align: center; padding: 60px;
+    }
+    .s-close::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(232,0,45,0.14) 0%, transparent 70%);
+    }
+    .close-h1 {
+      font-family: 'Oswald', sans-serif; font-weight: 700;
+      font-size: clamp(3rem, 8vw, 8rem);
+      line-height: 0.9; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .close-h1 .red { color: var(--red); }
+
+    /* ANIMATIONS */
+    .slide.active .slide-h2,
+    .slide.active .title-h1,
+    .slide.active .close-h1 { animation: fadeUp 0.5s both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .card,
+    .slide.active .metric-card,
+    .slide.active .callout,
+    .slide.active .step {
+      animation: fadeUp 0.5s both;
+    }
+    .slide.active .card:nth-child(2) { animation-delay: 0.07s; }
+    .slide.active .card:nth-child(3) { animation-delay: 0.14s; }
+    .slide.active .card:nth-child(4) { animation-delay: 0.21s; }
+
+    /* SLIDE NUMBERS */
+    .slide-num {
+      position: absolute; bottom: 72px; right: 80px;
+      font-family: 'Oswald', sans-serif; font-size: 0.75rem;
+      color: rgba(255,255,255,0.2); letter-spacing: 0.1em;
+    }
+
+    /* DIVIDER */
+    .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+
+    /* SCROLL CONTENT */
+    .s-content { scrollbar-width: none; }
+    .s-content::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">UCDP 2022–2026</div>
+  <div class="nav-center">Analítica de Datos · Proyecto Final</div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevSlide()">← Anterior</button>
+    <div class="slide-counter"><span id="cur">1</span> / <span id="tot">14</span></div>
+    <button class="nbtn" onclick="nextSlide()">Siguiente →</button>
+  </div>
+</nav>
+
+<div class="deck">
+
+  <!-- ══════════════════════════════════ SLIDE 1 ══════ PORTADA -->
+  <section class="slide s-title active" data-speaker="INTEGRANTE 1 · Apertura"
+    data-script="<strong>Empiecen así:</strong> 'Cuando escuchan la palabra guerra, ¿qué cifra se les viene a la mente? ¿Cuántos ataques hubo? ¿Cuántos murieron?' Hagan una pausa dramática. Luego: 'Ese es exactamente el problema. En nuestro proyecto descubrimos que contar eventos de violencia no te dice nada sobre cuánto daño humano ocurrió realmente. Y vamos a demostrarlo con datos.' Presenten el proyecto muy brevemente: quiénes son, qué fuente usaron —UCDP, la base de datos de conflictos más rigurosa del mundo— y cuál es la pregunta central de investigación que está en pantalla. Hablen despacio. 45 segundos máximo en esta diapositiva.">
+    <div style="position:relative; z-index:1; max-width: 900px; padding-top: 40px;">
+      <div class="title-eyebrow">ANALÍTICA DE DATOS &nbsp;·&nbsp; PROYECTO FINAL &nbsp;·&nbsp; UCDP</div>
+      <h1 class="title-h1">MÁS ALLÁ<br><span class="accent">DEL CONTEO</span></h1>
+      <p class="title-sub">Intensidad, daño civil e incertidumbre en conflictos recientes 2022–2026 · Datos UCDP</p>
+      <div class="hero-q">
+        ¿Cuando aumenta el número de eventos violentos, aumenta proporcionalmente la letalidad del conflicto?<br>
+        <span style="color:var(--red); font-weight:800;">La respuesta te va a sorprender.</span>
+      </div>
+    </div>
+    <div class="slide-num">01 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 2 ══════ IDEA CENTRAL -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 1 · Idea central"
+    data-script="<strong>Este es el golpe de apertura.</strong> No lean los números: <em>señálenlos</em> y digan: 'Procesamos más de 106 mil eventos de violencia registrados desde 2022. Esos eventos dejaron 831 mil muertos estimados.' Pausa. 'Ahora bien, si el conteo de eventos explicara el daño humano, tendríamos un R² alto. Lo que obtuvimos fue un R² de 0.008. Eso significa que la cantidad de ataques explica menos del 1% de la variación en muertes. La frecuencia de la guerra y su letalidad son dos cosas completamente distintas.'">
+    <div class="section-badge badge-red">⚡ IDEA CENTRAL</div>
+    <h2 class="slide-h2">Contar eventos<br>≠ Medir daño humano</h2>
+
+    <div class="split" style="flex:1; align-items:center;">
+      <div>
+        <p class="blockquote">Dos conflictos pueden tener <span class="hl">muchos eventos</span> y producir niveles de daño <span class="hl">completamente distintos.</span></p>
+      </div>
+      <div class="g2">
+        <div class="metric-card">
+          <span class="metric-num">106.259</span>
+          <span class="metric-label">Eventos procesados desde 2022</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-num" style="color:var(--gold)">831.179</span>
+          <span class="metric-label">Muertes estimadas en el período</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-num" style="color:var(--teal)">144.513</span>
+          <span class="metric-label">Muertes civiles registradas</span>
+        </div>
+        <div class="metric-card" style="border-color:rgba(232,0,45,0.4)">
+          <span class="metric-num" style="font-size:2.2rem">R² = 0,008</span>
+          <span class="metric-label">El conteo solo explica el <strong style="color:var(--red)">0,8%</strong> del daño</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">02 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 3 ══════ DATOS -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 1 · La base de datos"
+    data-script="<strong>Vendan la fuente.</strong> Digan: 'No usamos cualquier base de datos. El Uppsala Conflict Data Program es considerado el estándar de oro en investigación de conflictos armados a nivel mundial. Universidades, ONGs y organismos de la ONU lo usan.' Luego expliquen las tres fuentes que integraron: GED histórico, Candidate 2025 y el más reciente hasta marzo de 2026. 'Juntamos más de 416 mil eventos crudos. De esos, seleccionamos 106 mil para el análisis central, los más recientes y verificados.' Esto demuestra que el proyecto fue serio y trabajado, no improvisado.">
+    <div class="section-badge badge-teal">📊 DATOS</div>
+    <h2 class="slide-h2">Base académica,<br>grande y reproducible</h2>
+
+    <div class="g3" style="flex:1; align-items:stretch;">
+      <div class="card">
+        <h3>🌍 Fuente</h3>
+        <p>Uppsala Conflict Data Program — el estándar de oro académico internacional para violencia organizada. Usado por la ONU, universidades y ONGs globales.</p>
+      </div>
+      <div class="card">
+        <h3>🔗 Integración</h3>
+        <p>GED 25.1 histórico + Candidate GED 2025 + Candidate GED 26.0.3 hasta marzo de 2026. Tres fuentes, una sola base coherente.</p>
+      </div>
+      <div class="card">
+        <h3>📦 Volumen</h3>
+        <p><strong style="color:var(--gold)">416.101</strong> eventos crudos integrados. <strong style="color:var(--red)">106.259</strong> eventos recientes usados para el análisis central.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>Unidad de análisis:</strong> cada fila = un evento letal de violencia organizada con fecha, lugar, actores, tipo de violencia y estimaciones de muertes con rango de incertidumbre.</p>
+    </div>
+    <div class="slide-num">03 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 4 ══════ LIMPIEZA -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 1 · Limpieza de datos"
+    data-script="<strong>No se pongan técnicos en exceso, pero sí muestren que hubo trabajo real.</strong> Digan: 'Una base de datos de guerra no llega lista para analizar. Tuvimos que hacer limpieza profunda: convertir fechas, identificar valores especiales —por ejemplo, el -1 en fuentes que en realidad significaba nulo—, crear nuevas variables como el índice de daño civil y la incertidumbre de las estimaciones.' Señalen el paso 6 especialmente y digan: 'Este paso de crear nuevas variables fue el más creativo del proyecto. Ningún manual te dice cómo medir incertidumbre en datos de guerra. Tuvimos que pensarlo.' Esto muestra aprendizaje real.">
+    <div class="section-badge badge-gold">🔧 LIMPIEZA</div>
+    <h2 class="slide-h2">De base cruda<br>a panel analítico</h2>
+
+    <div class="timeline" style="flex:1;">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Inspección</h3>
+        <p>Shape, tipos, nulos, duplicados y rangos de valores.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Fechas</h3>
+        <p>Conversión a datetime y construcción de variable mes.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Numéricos</h3>
+        <p>Muertes, fuentes, precisión geográfica y coordenadas.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Valores especiales</h3>
+        <p><code style="color:var(--red)">-1</code> en fuentes tratado como nulo válido.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <h3>Etiquetas</h3>
+        <p>Códigos numéricos convertidos a lenguaje claro.</p>
+      </div>
+      <div class="step" style="border-color:rgba(255,214,0,0.3)">
+        <div class="step-num" style="background:var(--gold); color:black;">6</div>
+        <h3>Variables nuevas</h3>
+        <p>Incertidumbre, daño civil e índice de precisión. <strong style="color:var(--gold)">La parte creativa.</strong></p>
+      </div>
+    </div>
+    <div class="callout gold">
+      <p>El resultado: un <strong>panel mensual</strong> listo para graficar, comparar y modelar. 106.259 filas limpias.</p>
+    </div>
+    <div class="slide-num">04 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 5 ══════ OBJETIVO -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 1 · Objetivo y transición"
+    data-script="<strong>Esta es la diapositiva de transición — úsenla para crear suspenso.</strong> Presenten los tres elementos: la pregunta, la hipótesis y el modelo. Luego digan: 'Nuestra hipótesis antes de correr el modelo era que la frecuencia de eventos iba a explicar solo UNA PARTE de la letalidad. Y teníamos razón. Pero la magnitud de la diferencia fue mucho más extrema de lo que esperábamos.' Hagan pausa. 'Las gráficas van a contarles esa historia.' Con eso pasan a Integrante 2. Esta transición debe sonar dramática — es el gancho para la segunda parte.">
+    <div class="section-badge badge-teal">🎯 OBJETIVO</div>
+    <h2 class="slide-h2">Lo que vamos<br>a demostrar</h2>
+
+    <div class="g3" style="flex:1;">
+      <div class="card">
+        <h3>❓ Pregunta</h3>
+        <p>¿La <strong style="color:white">frecuencia mensual</strong> de eventos explica la <strong style="color:white">letalidad mensual</strong> de un conflicto?</p>
+      </div>
+      <div class="card">
+        <h3>💡 Hipótesis</h3>
+        <p>La frecuencia explica <strong style="color:var(--gold)">solo una parte limitada</strong>. La intensidad y el contexto importan más.</p>
+      </div>
+      <div class="card">
+        <h3>📐 Modelo</h3>
+        <p>Regresión lineal simple: eventos/mes como <strong style="color:var(--red)">X</strong>, muertes estimadas como <strong style="color:var(--red)">Y</strong>. Simple y poderoso.</p>
+      </div>
+    </div>
+    <div class="callout danger">
+      <p>No buscamos predicción perfecta. Buscamos <strong>comprobar si una explicación simple alcanza… o se queda ridículamente corta.</strong></p>
+    </div>
+    <div class="slide-num">05 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 6 ══════ PANORAMA -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 2 · Panorama"
+    data-script="<strong>Aquí empieza tu parte. Entren con energía.</strong> Digan: 'Cuando graficamos las muertes acumuladas por conflicto, lo primero que salta a la vista es la concentración brutal.' Señalen Rusia-Ucrania: '338 mil muertos. Un solo conflicto concentra el 40% de toda la letalidad del período.' Luego señalen Etiopía: '162 mil muertos pero con apenas 355 eventos registrados — el contraste con Ucrania que tiene 36 mil eventos lo dice todo.' Esto prepara al público para el argumento central: el número de ataques no te dice cuántas personas murieron. La gráfica lo hace evidente visualmente.">
+    <div class="section-badge badge-red">🌍 PANORAMA</div>
+    <h2 class="slide-h2">La letalidad se concentra<br>en <span style="color:var(--red)">pocos conflictos</span></h2>
+
+    <div class="chart-panel" style="flex:1;">
+      <h3>Muertes estimadas acumuladas 2022–2026 por caso</h3>
+      <div class="bar-list">
+        <div class="bar-row">
+          <span class="bar-name">🇷🇺 Rusia-Ucrania</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+          <span class="bar-value">338.461</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-name">🇪🇹 Etiopía</span>
+          <div class="bar-track"><div class="bar-fill" style="width:48%"></div></div>
+          <span class="bar-value">162.463</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-name">🇵🇸 Israel-Palestina</span>
+          <div class="bar-track"><div class="bar-fill" style="width:19%"></div></div>
+          <span class="bar-value">62.774</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-name">🇸🇩 Sudán</span>
+          <div class="bar-track"><div class="bar-fill" style="width:6%"></div></div>
+          <span class="bar-value">20.952</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout danger">
+      <p><strong>Primera conclusión visual:</strong> 4 conflictos = más del 90% de la letalidad reciente. La concentración es brutal.</p>
+    </div>
+    <div class="slide-num">06 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 7 ══════ SERIES -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 2 · Trayectorias"
+    data-script="<strong>Esta gráfica muestra que los conflictos no se comportan igual en el tiempo.</strong> Digan: 'Rusia-Ucrania mantiene una curva relativamente sostenida — una guerra de desgaste que no para.' Señalen Etiopía: 'Pico enorme en 2022, luego cae. Eso es lo que pasa cuando hay un choque masivo seguido de un armisticio.' Para Israel-Palestina: 'Escala bruscamente desde finales de 2023 con el conflicto en Gaza.' La clave es que digan: 'Cuatro conflictos, cuatro formas completamente distintas de escalar y bajar. Si solo contaras eventos por mes, nunca verías esto. Necesitas la dimensión de las muertes.'">
+    <div class="section-badge badge-teal">📈 SERIES DE TIEMPO</div>
+    <h2 class="slide-h2">No todos los conflictos<br>se comportan igual</h2>
+
+    <div class="chart-panel" style="flex:1;">
+      <h3>Trayectoria de muertes por año (estimadas)</h3>
+      <svg class="line-chart" viewBox="0 0 980 220" role="img">
+        <line x1="70" y1="190" x2="930" y2="190" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+        <line x1="70" y1="50" x2="70" y2="190" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+        <!-- grid lines -->
+        <line x1="70" y1="120" x2="930" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Year labels -->
+        <text style="font-size:12px;fill:rgba(255,255,255,0.4);font-family:Inter,sans-serif" x="65" y="208">2022</text>
+        <text style="font-size:12px;fill:rgba(255,255,255,0.4);font-family:Inter,sans-serif" x="270" y="208">2023</text>
+        <text style="font-size:12px;fill:rgba(255,255,255,0.4);font-family:Inter,sans-serif" x="480" y="208">2024</text>
+        <text style="font-size:12px;fill:rgba(255,255,255,0.4);font-family:Inter,sans-serif" x="690" y="208">2025</text>
+        <text style="font-size:12px;fill:rgba(255,255,255,0.4);font-family:Inter,sans-serif" x="900" y="208">2026</text>
+        <text style="font-size:11px;fill:rgba(255,255,255,0.3);font-family:Inter,sans-serif" x="10" y="55">180k</text>
+        <text style="font-size:11px;fill:rgba(255,255,255,0.3);font-family:Inter,sans-serif" x="18" y="125">90k</text>
+        <!-- Rusia-Ucrania -->
+        <polyline points="70,100 285,115 500,115 715,100 930,160" fill="none" stroke="#E8002D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Etiopia -->
+        <polyline points="70,55 285,190 500,190 715,190 930,190" fill="none" stroke="#FFD600" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Israel-Palestina -->
+        <polyline points="70,190 285,175 500,165 715,155 930,190" fill="none" stroke="#00E5FF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Sudan -->
+        <polyline points="70,190 285,182 500,183 715,175 930,189" fill="none" stroke="#00E676" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="legend">
+        <span class="legend-item"><i class="dot" style="background:#E8002D"></i>Rusia-Ucrania</span>
+        <span class="legend-item"><i class="dot" style="background:#FFD600"></i>Etiopía</span>
+        <span class="legend-item"><i class="dot" style="background:#00E5FF"></i>Israel-Palestina</span>
+        <span class="legend-item"><i class="dot" style="background:#00E676"></i>Sudán</span>
+      </div>
+    </div>
+    <div class="slide-num">07 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 8 ══════ TABLA CASOS -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 2 · La tabla reveladora"
+    data-script="<strong>Esta es LA diapositiva más importante de toda la presentación. No la lean completa — narren dos comparaciones clave.</strong> Primero: 'Etiopía tuvo 355 eventos y 162 mil muertos. Israel-Palestina tuvo 7.406 eventos y 62 mil muertos. Etiopía tuvo 20 veces menos eventos, pero 2.5 veces más muertos.' Pausa dramática. 'En Etiopía cada evento mató en promedio 457 personas. En Israel-Palestina, 8.' Segundo: 'Ahora miren la columna de porcentaje civil. Israel-Palestina tiene el 48.6% de muertes civiles. Etiopía apenas 0.3%.' Concluyan: 'Un ranking ordena la guerra de una forma. El otro, de forma completamente distinta. Eso es exactamente lo que queremos demostrar.'">
+    <div class="section-badge badge-gold">📋 CASOS CLAVE</div>
+    <h2 class="slide-h2">4 conflictos,<br><span style="color:var(--gold)">4 lecturas distintas</span></h2>
+
+    <table class="case-table" style="flex:1;">
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Eventos</th>
+          <th>Muertes estimadas</th>
+          <th>Muertes civiles</th>
+          <th>Muertes/evento</th>
+          <th>% civil</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="case-tag">🇷🇺 Rusia-Ucrania</span></td>
+          <td>36.772</td>
+          <td style="color:var(--red);font-weight:800">338.461</td>
+          <td>26.143</td>
+          <td>9,20</td>
+          <td>7,7%</td>
+        </tr>
+        <tr>
+          <td><span class="case-tag">🇪🇹 Etiopía</span></td>
+          <td>355</td>
+          <td style="color:var(--red);font-weight:800">162.463</td>
+          <td>529</td>
+          <td style="color:var(--gold);font-weight:800">457,64 ⚠️</td>
+          <td>0,3%</td>
+        </tr>
+        <tr>
+          <td><span class="case-tag">🇵🇸 Israel-Palestina</span></td>
+          <td>7.406</td>
+          <td style="color:var(--red);font-weight:800">62.774</td>
+          <td style="color:var(--teal);font-weight:800">30.488</td>
+          <td>8,48</td>
+          <td style="color:var(--teal);font-weight:800">48,6% 🔴</td>
+        </tr>
+        <tr>
+          <td><span class="case-tag">🇸🇩 Sudán</span></td>
+          <td>1.295</td>
+          <td style="color:var(--red);font-weight:800">20.952</td>
+          <td>6.396</td>
+          <td>16,18</td>
+          <td>30,5%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout danger">
+      <p><strong>Etiopía vs Israel-Palestina:</strong> 20× menos eventos, 2.5× más muertos. La frecuencia no predice la letalidad.</p>
+    </div>
+    <div class="slide-num">08 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 9 ══════ DAÑO CIVIL -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 2 · Daño civil"
+    data-script="<strong>Este es tu cierre. Haz que el público entienda por qué el daño civil importa.</strong> Digan: 'Ordenar los conflictos por muertes totales te da un ranking. Ordenarlos por porcentaje de víctimas civiles te da otro ranking completamente diferente.' Señalen Israel-Palestina: 'Aquí casi 1 de cada 2 muertos es civil. Eso no es un conflicto convencional — tiene características de violencia contra la población.' Luego digan: 'Sudán también tiene casi un tercio de víctimas civiles, a pesar de tener relativamente pocos eventos registrados.' Concluyan: 'Esta visualización demuestra que con los mismos datos podemos contar historias completamente distintas según qué variable elegimos analizar.'">
+    <div class="section-badge badge-red">👥 DAÑO CIVIL</div>
+    <h2 class="slide-h2">Las muertes civiles<br>cambian <span style="color:var(--red)">el ranking</span></h2>
+
+    <div class="g2" style="flex:1; align-items:stretch;">
+      <div class="chart-panel">
+        <h3>Proporción de muertes civiles por conflicto</h3>
+        <div class="bar-list" style="margin-top:16px;">
+          <div class="bar-row">
+            <span class="bar-name">🇵🇸 Israel-Palestina</span>
+            <div class="bar-track"><div class="bar-fill" style="width:100%; background:linear-gradient(90deg,var(--red),var(--gold))"></div></div>
+            <span class="bar-value" style="color:var(--red)">48,6%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">🇸🇩 Sudán</span>
+            <div class="bar-track"><div class="bar-fill" style="width:63%; background:linear-gradient(90deg,var(--red),var(--gold))"></div></div>
+            <span class="bar-value" style="color:var(--gold)">30,5%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">🇷🇺 Rusia-Ucrania</span>
+            <div class="bar-track"><div class="bar-fill" style="width:16%; background:linear-gradient(90deg,var(--red),var(--gold))"></div></div>
+            <span class="bar-value">7,7%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">🇪🇹 Etiopía</span>
+            <div class="bar-track"><div class="bar-fill" style="width:1%; background:linear-gradient(90deg,var(--red),var(--gold))"></div></div>
+            <span class="bar-value">0,3%</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px; justify-content:center;">
+        <div class="callout danger">
+          <p><strong>Israel-Palestina:</strong> casi 1 de cada 2 muertos es civil. El ordenamiento cambia completamente.</p>
+        </div>
+        <div class="callout gold">
+          <p><strong>Sudán:</strong> peso civil considerable dentro de un conflicto interno reciente y poco cubierto.</p>
+        </div>
+        <div class="callout">
+          <p>Ordenar por muertes totales = una lectura.<br>Ordenar por % civil = <strong>otra historia completamente distinta.</strong></p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">09 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 10 ══════ REGRESION GLOBAL -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 3 · Regresión global"
+    data-script="<strong>Esta es la diapositiva más poderosa estadísticamente. Preséntenla con confianza, NO con disculpas.</strong> Digan: 'Corrimos una regresión lineal simple: eventos mensuales predice muertes mensuales. El resultado fue un R² de 0.008.' Pausa. 'Para los que no están familiarizados: R² de 0 significa que el modelo no explica nada. R² de 1 significa explicación perfecta. Nosotros obtuvimos 0.008. Cero coma cero cero ocho.' Pausa más larga. 'Eso no es un fracaso estadístico — es exactamente lo que nuestra hipótesis predecía. Y es la demostración más clara de que la frecuencia de los ataques y el daño humano son fenómenos distintos que necesitan variables distintas para ser explicados.'">
+    <div class="section-badge badge-red">📉 REGRESIÓN GLOBAL</div>
+    <h2 class="slide-h2">El modelo confirma<br>el límite del conteo</h2>
+
+    <div class="split" style="flex:1; align-items:center;">
+      <div style="text-align:center;">
+        <div style="font-family:'Oswald',sans-serif; font-size:1rem; color:var(--gray); margin-bottom:8px; letter-spacing:0.1em;">R CUADRADO GLOBAL</div>
+        <div class="big-num">0,008</div>
+        <p style="color:var(--gray); margin-top:16px; font-size:0.95rem; line-height:1.6;">
+          La frecuencia mensual de eventos<br>explica menos del <strong style="color:var(--red)">1%</strong> de la<br>variación en muertes estimadas.
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="g2">
+          <div class="metric-card">
+            <span class="metric-num" style="font-size:2rem">3,50</span>
+            <span class="metric-label">Pendiente global (coef. β)</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num" style="font-size:2rem">51</span>
+            <span class="metric-label">Meses modelados</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num" style="font-size:1.6rem; color:var(--teal)">21.987</span>
+            <span class="metric-label">RMSE global (error)</span>
+          </div>
+          <div class="metric-card" style="border-color:rgba(0,230,118,0.3)">
+            <span class="metric-num" style="font-size:1.3rem; color:var(--green)">Exploratorio</span>
+            <span class="metric-label">No causal — es descriptivo</span>
+          </div>
+        </div>
+        <div class="callout danger">
+          <p><strong>Un R² bajo no es un fracaso.</strong> Es evidencia de que la guerra no se explica como una suma uniforme de eventos.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">10 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 11 ══════ REGRESION POR CASO -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 3 · Regresión por caso"
+    data-script="<strong>Esta diapositiva muestra pensamiento crítico avanzado.</strong> Digan: 'Decidimos no conformarnos con un solo modelo global. Corrimos regresiones por separado para cada conflicto, y los resultados son reveladores.' Señalen Israel-Palestina: 'Aquí el R² es 0.447. No es perfecto, pero significa que casi la mitad de la variación en muertes sí se explica por el número de eventos.' Luego Sudán: '0.221 — también hay señal.' Ahora el contraste: 'Rusia-Ucrania: 0.005. Etiopía: prácticamente cero. En estos conflictos, el número de eventos en un mes no predice cuánta gente murió ese mes — porque lo que importa es la intensidad de cada evento individual, no cuántos hubo.' Esto es la sofisticación analítica del proyecto.">
+    <div class="section-badge badge-gold">🔍 MODELO POR CASO</div>
+    <h2 class="slide-h2">La relación eventos-muertes<br><span style="color:var(--gold)">cambia según el conflicto</span></h2>
+
+    <div class="chart-panel" style="flex:1;">
+      <h3>R² de regresión individual por caso</h3>
+      <div class="bar-list" style="margin-top:20px;">
+        <div class="bar-row">
+          <span class="bar-name">🇵🇸 Israel-Palestina</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%; background:linear-gradient(90deg,var(--teal),var(--green))"></div></div>
+          <span class="bar-value" style="color:var(--teal)">R² = 0,447</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-name">🇸🇩 Sudán</span>
+          <div class="bar-track"><div class="bar-fill" style="width:49%; background:linear-gradient(90deg,var(--teal),var(--green))"></div></div>
+          <span class="bar-value" style="color:var(--teal)">R² = 0,221</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-name">🇷🇺 Rusia-Ucrania</span>
+          <div class="bar-track"><div class="bar-fill" style="width:1.1%; background:linear-gradient(90deg,var(--red),var(--gold))"></div></div>
+          <span class="bar-value" style="color:var(--gray)">R² = 0,005</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-name">🇪🇹 Etiopía</span>
+          <div class="bar-track"><div class="bar-fill" style="width:0.2%; background:var(--red)"></div></div>
+          <span class="bar-value" style="color:var(--gray)">R² ≈ 0,000</span>
+        </div>
+      </div>
+    </div>
+    <div class="g2" style="margin-top:6px;">
+      <div class="callout">
+        <p>En Israel-Palestina y Sudán: <strong>los eventos del mes sí anticipan las muertes del mes.</strong></p>
+      </div>
+      <div class="callout danger">
+        <p>En Ucrania y Etiopía: <strong>un solo evento masivo domina la serie. La frecuencia es irrelevante.</strong></p>
+      </div>
+    </div>
+    <div class="slide-num">11 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 12 ══════ CONCLUSIONES -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 3 · Conclusiones"
+    data-script="<strong>Hablen despacio y con seguridad. Cada conclusión vale.</strong> '1. Concentración: cuatro conflictos concentran más del 90% de la letalidad.' '2. El conteo solo falla: R² de 0.008 — la evidencia más clara del proyecto.' '3. El daño civil cambia el ranking completo — Israel-Palestina no es el primero en muertos totales, pero sí en víctimas civiles.' '4. Los datos de guerra son estimaciones con incertidumbre alta — nunca presentar cifras de conflicto como si fueran exactas.' Y la más importante: '5. Nuestro proyecto demostró que una buena historia de datos no fuerza un modelo — INTERPRETA sus límites. Eso es analítica de datos madura.' Pausa final antes de la próxima diapositiva.">
+    <div class="section-badge badge-green">✅ CONCLUSIONES</div>
+    <h2 class="slide-h2">5 conclusiones<br>defendibles</h2>
+
+    <div class="g2" style="flex:1;">
+      <div class="card" style="border-color:rgba(232,0,45,0.3)">
+        <h3>1. Concentración</h3>
+        <p>4 conflictos = más del 90% de la letalidad reciente. La violencia organizada es brutalmente concentrada geográficamente.</p>
+      </div>
+      <div class="card" style="border-color:rgba(255,214,0,0.3)">
+        <h3>2. Conteo limitado</h3>
+        <p>R² = 0.008. La cantidad de eventos no alcanza para explicar el daño humano. <strong style="color:var(--gold)">Es el hallazgo central.</strong></p>
+      </div>
+      <div class="card" style="border-color:rgba(0,229,255,0.3)">
+        <h3>3. Daño civil</h3>
+        <p>Las muertes civiles cambian completamente el ranking. Israel-Palestina: 48.6% de víctimas civiles. Etiopía: 0.3%.</p>
+      </div>
+      <div class="card" style="border-color:rgba(0,230,118,0.3)">
+        <h3>4. Incertidumbre</h3>
+        <p>Las cifras de guerra son estimaciones con rangos amplios. Nunca presentar como exactas. La duda responsable es parte del análisis.</p>
+      </div>
+    </div>
+    <div class="callout gold">
+      <p><strong>5. Valor analítico:</strong> Una buena historia de datos no fuerza el modelo. INTERPRETA sus límites. Eso es madurez estadística.</p>
+    </div>
+    <div class="slide-num">12 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 13 ══════ LIMITACIONES -->
+  <section class="slide s-content" data-speaker="INTEGRANTE 3 · Limitaciones y rigor"
+    data-script="<strong>Esta diapositiva debe durar solo 45 segundos. No se explayen.</strong> Digan rápido: 'Nuestro trabajo tiene límites claros y los reconocemos: Primero, UCDP registra eventos letales reportados — no todos los daños sociales, psicológicos o económicos de la guerra. Segundo, los datos 2025 y 2026 son preliminares y pueden cambiar. Tercero, nuestra regresión describe asociación, no causalidad.' Pausa y digan con firmeza: 'Reconocer estos límites NO debilita el trabajo. Al contrario: demuestra lectura responsable y criterio académico. No todos los proyectos tienen la honestidad de hacer esto.' Luego pasen rápido al cierre.">
+    <div class="section-badge badge-teal">⚠️ LIMITACIONES</div>
+    <h2 class="slide-h2">Rigor significa<br>reconocer límites</h2>
+
+    <div class="g3" style="flex:1; align-items:center;">
+      <div class="card" style="border-color:rgba(0,229,255,0.3)">
+        <h3>📡 Fuente</h3>
+        <p>UCDP registra eventos letales <strong style="color:white">reportados</strong>. No todos los daños sociales, económicos ni psicológicos de la guerra quedan capturados.</p>
+      </div>
+      <div class="card" style="border-color:rgba(255,214,0,0.3)">
+        <h3>📅 Actualización</h3>
+        <p>Los datos Candidate 2025 y 2026 son <strong style="color:var(--gold)">preliminares</strong>. Las cifras pueden cambiar en versiones futuras de la base.</p>
+      </div>
+      <div class="card" style="border-color:rgba(232,0,45,0.3)">
+        <h3>📐 Modelo</h3>
+        <p>La regresión describe <strong style="color:var(--red)">asociación</strong>, no causalidad. No decimos que los eventos CAUSAN muertes — describimos una relación estadística.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>Reconocer límites fortalece el trabajo.</strong> Demuestra lectura responsable de datos sensibles y criterio académico real.</p>
+    </div>
+    <div class="slide-num">13 / 14</div>
+  </section>
+
+  <!-- ══════════════════════════════════ SLIDE 14 ══════ CIERRE -->
+  <section class="slide s-close" data-speaker="CIERRE · Todos"
+    data-script="<strong>El Integrante 3 termina con la última frase memorable.</strong> Digan: 'La próxima vez que lean una cifra de guerra — eventos, muertos, fechas — háganse estas preguntas: ¿Quiénes son esos muertos? ¿Cuántos son civiles? ¿Cuánta incertidumbre hay en ese número? ¿Es esa la única forma de ordenar el ranking?' Pausa larga. 'La analítica de datos no te da respuestas fáciles. Te da mejores preguntas. Y eso, en un tema tan serio como la guerra, es lo más importante que puede hacer.' Agradezcan y pregunten si hay preguntas. Mantengan postura, no se encorven.">
+    <div style="position:relative; z-index:1; max-width:1000px; text-align:center;">
+      <div class="title-eyebrow" style="text-align:center; display:block; margin-bottom:16px;">ANALÍTICA DE DATOS · CONCLUSIÓN</div>
+      <h1 class="close-h1">CONTAR EVENTOS<br><span class="red">NO BASTA.</span></h1>
+      <p style="font-size:1.2rem; color:var(--gray); max-width:750px; line-height:1.7; margin:0 auto 36px;">
+        La analítica de datos transforma registros complejos en una explicación responsable, clara y defendible.
+      </p>
+      <div class="hero-q" style="text-align:left; max-width:780px; margin:0 auto;">
+        La intensidad de una guerra se entiende mirando <strong style="color:var(--gold)">frecuencia</strong>, <strong style="color:var(--red)">letalidad</strong>, <strong style="color:var(--teal)">civiles afectados</strong> e <strong style="color:var(--green)">incertidumbre</strong> — nunca una sola cifra.
+      </div>
+      <div style="margin-top:32px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+        <div class="metric-card" style="min-width:150px;">
+          <span class="metric-num" style="font-size:1.6rem">106K</span>
+          <span class="metric-label">Eventos analizados</span>
+        </div>
+        <div class="metric-card" style="min-width:150px;">
+          <span class="metric-num" style="font-size:1.6rem; color:var(--gold)">831K</span>
+          <span class="metric-label">Muertes estimadas</span>
+        </div>
+        <div class="metric-card" style="min-width:150px;">
+          <span class="metric-num" style="font-size:1.6rem; color:var(--teal)">R²=0,008</span>
+          <span class="metric-label">Hallazgo central</span>
+        </div>
+        <div class="metric-card" style="min-width:150px;">
+          <span class="metric-num" style="font-size:1.6rem; color:var(--green)">4</span>
+          <span class="metric-label">Conflictos, 4 lecturas</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">14 / 14</div>
+  </section>
+
+</div>
+
+<!-- SPEAKER PANEL -->
+
+<div class="speaker-panel" id="speakerPanel">
+  <div class="speaker-box">
+    <div class="speaker-who" id="speakerWho">—</div>
+    <div class="speaker-text" id="speakerText">—</div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let cur = 0;
+  let speakerVisible = false;
+
+  document.getElementById('tot').textContent = slides.length;
+
+  function showSlide(n) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, slides.length - 1));
+    slides[cur].classList.add('active');
+    document.getElementById('cur').textContent = cur + 1;
+    document.getElementById('progress-bar').style.width = ((cur + 1) / slides.length * 100) + '%';
+    updateSpeaker();
+  }
+
+  function updateSpeaker() {
+    const s = slides[cur];
+    document.getElementById('speakerWho').textContent = s.dataset.speaker || '—';
+    document.getElementById('speakerText').innerHTML = s.dataset.script || '—';
+  }
+
+  function toggleSpeaker() {
+    speakerVisible = !speakerVisible;
+    document.getElementById('speakerPanel').classList.toggle('visible', speakerVisible);
+  }
+
+  function nextSlide() { showSlide(cur + 1); }
+  function prevSlide() { showSlide(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    if (e.key === 's' || e.key === 'S') toggleSpeaker();
+    if (e.key === 'Home') showSlide(0);
+    if (e.key === 'End') showSlide(slides.length - 1);
+  });
+
+  updateSpeaker();
+  document.getElementById('progress-bar').style.width = (1 / slides.length * 100) + '%';
+</script>
+
+</body>
+</html>

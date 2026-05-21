@@ -1,190 +1,135 @@
-# Week 11 Workshop: Data Storytelling for Your Project
+# Semana 11 Workshop: Dashboards Interactivos con Plotly + Streamlit
 
-**Duration**: 2 hours
+**Duración sugerida**: 2 horas
 
-## Overview
+## Propósito
 
-In this workshop, you will create a complete 5-slide presentation for your data analytics project and practice delivering a 5-minute pitch. You will also participate in a peer feedback session to refine your storytelling skills.
+En esta sesión no vamos a construir una aplicación desde cero frente al tablero. Primero verás una app terminada, luego seguirás una guía paso a paso con una plantilla funcional y, al final, adaptarás esa base a un dataset de tu elección.
 
----
+## Dataset guiado
 
-## Learning Objectives
+Usaremos el archivo local:
 
-By the end of this workshop, you will be able to:
-1. Distill your project findings into a compelling 5-slide story
-2. Deliver a focused 5-minute data presentation
-3. Give and receive constructive feedback on data storytelling
+- `../data/calidad_aire_risaralda.csv`
 
----
+Este dataset permite construir un dashboard claro porque tiene:
 
-## Workshop Structure
+- fechas
+- municipios
+- estaciones
+- tipo de material particulado (`PM10` y `PM2.5`)
+- mediciones numéricas
 
-| Time | Activity | Description |
-|------|----------|-------------|
-| 0:00 - 0:15 | Introduction | Review storytelling principles |
-| 0:15 - 0:45 | Slide Creation | Build your 5-slide presentation |
-| 0:45 - 1:00 | Practice Solo | Rehearse your pitch |
-| 1:00 - 1:45 | Peer Presentations | Present to small groups + feedback |
-| 1:45 - 2:00 | Wrap-up | Reflection and next steps |
+## Flujo del workshop
 
----
+| Momento | Objetivo | Entregable |
+|--------|----------|------------|
+| Demo | Entender cómo luce una app útil | Checklist de componentes |
+| Guía paso a paso | Completar una app base | `streamlit_app_starter.py` funcionando |
+| Extensión | Adaptar la plantilla | Propuesta propia con otro dataset |
 
-## Part 1: The 5-Slide Framework (30 minutes)
+## Archivos
 
-Your presentation must follow this structure:
+| Archivo | Uso |
+|--------|-----|
+| `workshop_starter.ipynb` | Práctica guiada de Plotly con el dataset de calidad del aire |
+| `workshop_solution.ipynb` | Solución del notebook guiado |
+| `streamlit_app_starter.py` | Plantilla incompleta del dashboard |
+| `streamlit_app_solution.py` | Solución completa del dashboard |
+| `streamlit_demo_violencia.py` | Demo terminada para mostrar al inicio de la clase |
 
-### Slide 1: The Hook
-**Purpose**: Grab attention and establish relevance
+## Parte 1. Mira la demo antes de escribir código
 
-- Start with a surprising fact, question, or problem statement
-- Make the audience care in the first 30 seconds
-- Avoid: title slides with just your name and project title
+Abre la demo del profesor:
 
-**Example**: "Every day, our company loses $6,500 to customer churn. Today I'll show you how we can cut that by 40%."
+```bash
+streamlit run streamlit_demo_violencia.py
+```
 
-### Slide 2: The Situation
-**Purpose**: Set the context
+Mientras la observas, identifica:
 
-- What data did you analyze?
-- What was the business/research question?
-- Why does this matter?
-- Keep it brief - this is setup, not the main event
+1. Qué filtros tiene.
+2. Qué métricas resume.
+3. Qué preguntas permite responder.
+4. Qué decisiones de diseño ayudan a leer mejor los datos.
 
-### Slide 3: The Key Insight
-**Purpose**: Deliver your main finding
+## Parte 2. Completa la app guiada
 
-- ONE central insight (not a list of findings)
-- Support with a clear, simple visualization
-- Use the "newspaper headline" test: could this be a headline?
-- This is the heart of your presentation
+Abre la plantilla:
 
-### Slide 4: The Evidence
-**Purpose**: Build credibility
+```bash
+streamlit run streamlit_app_starter.py
+```
 
-- Show 2-3 supporting data points
-- Address potential objections ("But what about...?")
-- Include methodology notes if relevant
-- Keep visualizations simple and readable
+Debes completar los `TODO` para que la app tenga:
 
-### Slide 5: The Call to Action
-**Purpose**: Drive decision-making
+1. Título y descripción.
+2. Filtros en la barra lateral.
+3. Tres métricas principales.
+4. Tres visualizaciones interactivas.
+5. Una tabla opcional con datos filtrados.
 
-- Specific, actionable recommendations
-- Expected impact (quantified if possible)
-- Next steps and timeline
-- End with confidence, not "any questions?"
+## Parte 3. Pásala de plantilla a producto útil
 
----
+Cuando la app base funcione, agrega al menos **una** mejora:
 
-## Part 2: Pitch Guidelines (15 minutes practice)
+- un filtro adicional
+- una pestaña nueva
+- un gráfico distinto
+- una conclusión escrita en lenguaje natural
+- un botón de descarga del subconjunto filtrado
 
-### Time Allocation (5 minutes total)
-- Hook: 30 seconds
-- Situation: 45 seconds
-- Key Insight: 90 seconds
-- Evidence: 90 seconds
-- Call to Action: 30 seconds
+## Parte 4. Adáptala a otro dataset
 
-### Delivery Tips
+En equipos, escoge un dataset público que tenga al menos:
 
-**Do:**
-- Make eye contact with your audience
-- Use simple language (no jargon without explanation)
-- Pause after key points
-- Point to specific parts of visualizations
-- End with a clear recommendation
+- una variable temporal
+- una o más variables categóricas
+- una métrica numérica
 
-**Don't:**
-- Read from your slides
-- Apologize for your data or analysis
-- Rush through the ending
-- Use phrases like "I just want to show..." or "This is just..."
-- End with "That's it" or "Any questions?"
+Tu reto es reutilizar la plantilla y construir una mini app que responda una pregunta clara.
 
-### Practice Checklist
+### Preguntas guía
 
-Before presenting, verify:
-- [ ] Each slide has ONE main point
-- [ ] Visualizations are readable from the back of the room
-- [ ] You can explain each chart in one sentence
-- [ ] Your pitch fits in 5 minutes (practice with a timer)
-- [ ] You have a strong opening and closing line
+- ¿Qué está cambiando en el tiempo?
+- ¿Qué categorías tienen el valor más alto o más bajo?
+- ¿Qué filtros serían útiles para un usuario real?
+- ¿Qué insight debería entender alguien en menos de 30 segundos?
 
----
+## Criterios mínimos de entrega
 
-## Part 3: Peer Feedback Session (45 minutes)
+| Criterio | Esperado |
+|----------|----------|
+| Funciona | La app corre sin errores |
+| Filtros | Al menos 3 filtros útiles |
+| Métricas | Al menos 3 KPIs |
+| Gráficos | Al menos 3 gráficos interactivos |
+| Claridad | La app comunica una pregunta o propósito |
 
-### Group Formation
-- Form groups of 4 students
-- Each person presents (5 min) + receives feedback (5-7 min)
+## Comandos útiles
 
-### Feedback Protocol
+Instalar dependencias:
 
-**For Presenters:**
-1. Present your 5-minute pitch
-2. Listen to feedback without defending
-3. Take notes on suggestions
-4. Ask clarifying questions if needed
+```bash
+pip install streamlit plotly pandas
+```
 
-**For Reviewers:**
-Use the feedback form in the workshop notebook. Focus on:
+Ejecutar la plantilla:
 
-1. **Clarity**: Did you understand the main point?
-2. **Evidence**: Was the data convincing?
-3. **Action**: Do you know what to do next?
-4. **Engagement**: Did the story hold your attention?
+```bash
+streamlit run streamlit_app_starter.py
+```
 
-### Feedback Framework: "I Like, I Wish, What If"
+Ejecutar la solución:
 
-- **I like...** (what worked well)
-- **I wish...** (what could be improved)
-- **What if...** (suggestions to try)
+```bash
+streamlit run streamlit_app_solution.py
+```
 
-**Example:**
-- "I like how you quantified the business impact upfront"
-- "I wish the key insight slide had a clearer headline"
-- "What if you started with a customer story instead of the data overview?"
+## Cierre esperado
 
----
+Al final del workshop deberías tener:
 
-## Deliverables
-
-By the end of this workshop, you should have:
-
-1. **5-slide presentation** (PDF or slides format)
-2. **Completed peer feedback forms** (for each group member)
-3. **Revised pitch notes** based on feedback received
-
----
-
-## Resources
-
-- `workshop_starter.ipynb` - Templates and frameworks to get started
-- `workshop_solution.ipynb` - Example of a complete data story
-
----
-
-## Evaluation Criteria
-
-Your final project presentation will be evaluated on:
-
-| Criteria | Weight | Description |
-|----------|--------|-------------|
-| Story Structure | 25% | Clear narrative arc with hook, insight, and action |
-| Data Visualization | 25% | Charts are clear, appropriate, and support the story |
-| Insight Quality | 25% | Main finding is meaningful and well-supported |
-| Delivery | 25% | Confident, clear, within time limit |
-
----
-
-## Tips for Success
-
-1. **Start with the end**: What do you want your audience to DO after your presentation?
-2. **Cut ruthlessly**: If a slide doesn't advance your story, remove it
-3. **Test your visuals**: Show them to someone unfamiliar with your project
-4. **Practice out loud**: Silent practice doesn't reveal timing or awkward phrasing
-5. **Embrace feedback**: The best presenters are the best listeners
-
----
-
-*Good luck with your presentations!*
+1. Una app guiada funcionando con el dataset de calidad del aire.
+2. Una lista de cambios para adaptarla a otro dataset.
+3. Un primer prototipo propio listo para mostrar.
