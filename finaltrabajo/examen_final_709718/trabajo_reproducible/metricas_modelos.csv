@@ -1,0 +1,5 @@
+Modelo,MAE (miles ton),RMSE (miles ton),nRMSE (%),R²
+M0 — Media Zona×Carga,142.028,319.702,102.223,0.692
+M1 — Reg. Lineal,362.245,547.085,174.927,0.1
+M2 — Lineal+Interacción,358.671,545.679,174.477,0.104
+M3 — Media solo Zona,297.455,513.163,164.081,0.208
